@@ -1,65 +1,377 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Navbar } from "@/components/layout/navbar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Zap,
+  Star,
+  Check,
+  ChevronDown,
+  ArrowRight,
+  Sparkles,
+  Globe,
+  Heart,
+  TrendingUp,
+  Users,
+  Clock,
+} from "lucide-react";
 
-export default function Home() {
+const features = [
+  {
+    icon: Sparkles,
+    title: "AI-Powered Generation",
+    description: "Generate 5 unique viral captions instantly using GPT-4. Every variation is optimized for maximum engagement.",
+  },
+  {
+    icon: Globe,
+    title: "Multi-Platform Support",
+    description: "Tailored content for Facebook, TikTok, Instagram, and YouTube Shorts with platform-specific best practices.",
+  },
+  {
+    icon: Heart,
+    title: "Filipino Creator Focus",
+    description: "Native Tagalog and Taglish content generation for OFW posts, nurse appreciation, and Filipino community content.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Viral-Optimized Output",
+    description: "Every caption includes a hook, body, hashtags, first comment, and CTA — the complete engagement formula.",
+  },
+  {
+    icon: Users,
+    title: "11 Content Types",
+    description: "From reel captions to giveaway posts, star sender shoutouts to real estate listings — all covered.",
+  },
+  {
+    icon: Clock,
+    title: "Save & Organize",
+    description: "Build your content library. Save, edit, search, and filter your generated captions anytime.",
+  },
+];
+
+const contentTypes = [
+  "Reel Caption", "Viral Hook", "Hashtags", "First Comment",
+  "Giveaway Post", "Star Sender Shoutout", "Funny Couple Caption",
+  "Inspirational Post", "OFW Content", "Nurse Appreciation", "Real Estate Caption",
+];
+
+const testimonials = [
+  {
+    name: "Maria Santos",
+    role: "Facebook Creator • 50K followers",
+    content: "This tool changed my content game completely! My reels are getting 10x more views since I started using Viral Caption Studio.",
+    rating: 5,
+  },
+  {
+    name: "Juan dela Cruz",
+    role: "Real Estate Agent • Facebook Marketer",
+    content: "The real estate captions are incredibly professional. My listings get more inquiries now. Worth every peso!",
+    rating: 5,
+  },
+  {
+    name: "Nurse Ana Reyes",
+    role: "OFW Nurse • Content Creator",
+    content: "Finally a tool that understands Filipino creators! The Taglish content sounds so natural and gets amazing engagement.",
+    rating: 5,
+  },
+];
+
+const faqs = [
+  {
+    q: "How does the AI content generator work?",
+    a: "Simply select your platform, content type, tone, and length, then describe your topic. Our AI generates 5 unique viral-optimized variations instantly using advanced GPT-4 technology.",
+  },
+  {
+    q: "Can it write in Tagalog or Taglish?",
+    a: "Yes! We have dedicated Tagalog and Taglish tone options designed specifically for Filipino creators. The AI writes naturally like a Filipino content creator would speak.",
+  },
+  {
+    q: "What's the difference between Free and Pro?",
+    a: "Free users get 10 generations per day. Pro users get unlimited generations, plus access to all templates, unlimited saved content, and priority support.",
+  },
+  {
+    q: "Can I cancel my subscription anytime?",
+    a: "Absolutely. You can cancel your Pro subscription at any time from the Billing page. You'll retain access until the end of your billing period.",
+  },
+  {
+    q: "Is my content unique and safe to use?",
+    a: "Yes! Every generation produces unique content. The AI is instructed to avoid offensive, misleading, or harmful content to keep your brand safe.",
+  },
+];
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gray-950 text-white">
+      <Navbar />
+
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-gray-950 to-purple-900/20" />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-violet-600/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-4xl text-center">
+          <Badge variant="default" className="mb-6 inline-flex gap-1.5">
+            <Sparkles className="h-3 w-3" />
+            Powered by GPT-4 AI
+          </Badge>
+
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
+            Generate Viral
+            <span className="block bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Facebook Content
+            </span>
+            in Seconds
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
+            The AI content generator built for Filipino Facebook creators. Write viral captions,
+            hooks, hashtags, giveaway posts, and more — in Tagalog, Taglish, or English.
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Link href="/register">
+              <Button size="xl" variant="gradient" className="w-full sm:w-auto gap-2">
+                Start Generating Free <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="#features">
+              <Button size="xl" variant="outline" className="w-full sm:w-auto">
+                See Features
+              </Button>
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8 text-center">
+            {[
+              { label: "Content Types", value: "11+" },
+              { label: "Platforms", value: "4" },
+              { label: "Tones Available", value: "8" },
+              { label: "Variations per Generate", value: "5" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                <div className="text-xs text-white/40 mt-0.5">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Content Types */}
+      <section className="py-8 border-y border-white/5 overflow-hidden">
+        <div className="flex gap-3 flex-wrap justify-center px-4">
+          {contentTypes.map((type) => (
+            <span
+              key={type}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60"
+            >
+              <Zap className="h-2.5 w-2.5 text-violet-400" />
+              {type}
+            </span>
+          ))}
         </div>
-      </main>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="py-24 px-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <Badge variant="default" className="mb-4">Features</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Everything You Need to Go Viral
+            </h2>
+            <p className="text-white/50 max-w-xl mx-auto">
+              Built specifically for Facebook creators who want to grow their audience and engagement faster.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={feature.title} className="group hover:border-violet-500/30 transition-all">
+                  <CardContent className="p-6">
+                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600/20 border border-violet-500/30 group-hover:bg-violet-600/30 transition-all">
+                      <Icon className="h-5 w-5 text-violet-400" />
+                    </div>
+                    <h3 className="text-base font-semibold text-white mb-2">{feature.title}</h3>
+                    <p className="text-sm text-white/50 leading-relaxed">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-24 px-4 bg-white/[0.02]">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center mb-16">
+            <Badge variant="default" className="mb-4">Pricing</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-white/50">Start free, upgrade when you need more.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-base font-semibold text-white mb-1">Free</h3>
+                <div className="text-3xl font-bold text-white mb-1">$0</div>
+                <p className="text-xs text-white/40 mb-6">forever</p>
+                <ul className="space-y-2.5 mb-6">
+                  {["10 generations/day", "All content types", "All platforms", "Save 50 captions", "Basic templates"].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register">
+                  <Button variant="outline" className="w-full">Get Started</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="border-violet-500/50 bg-violet-600/10 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <Badge variant="pro" className="text-xs">Most Popular</Badge>
+              </div>
+              <CardContent className="p-6">
+                <h3 className="text-base font-semibold text-white mb-1">Pro</h3>
+                <div className="text-3xl font-bold text-white mb-1">$19</div>
+                <p className="text-xs text-white/40 mb-6">per month</p>
+                <ul className="space-y-2.5 mb-6">
+                  {["Unlimited generations", "All content types", "All platforms", "Unlimited saved captions", "All templates", "Priority support", "Export content"].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register">
+                  <Button variant="gradient" className="w-full">Start Pro Trial</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-base font-semibold text-white mb-1">Creator Pro</h3>
+                <div className="text-3xl font-bold text-white mb-1">$49</div>
+                <p className="text-xs text-white/40 mb-6">per month</p>
+                <ul className="space-y-2.5 mb-6">
+                  {["Everything in Pro", "Custom AI training", "Bulk generation", "Team collaboration", "API access", "White-label exports", "Dedicated support"].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register">
+                  <Button variant="outline" className="w-full">Get Creator Pro</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 px-4">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center mb-16">
+            <Badge variant="default" className="mb-4">Testimonials</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Loved by Filipino Creators
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t) => (
+              <Card key={t.name} className="hover:border-violet-500/20 transition-all">
+                <CardContent className="p-6">
+                  <div className="flex gap-0.5 mb-4">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-white/70 leading-relaxed mb-4">&ldquo;{t.content}&rdquo;</p>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{t.name}</p>
+                    <p className="text-xs text-white/40">{t.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-24 px-4 bg-white/[0.02]">
+        <div className="mx-auto max-w-2xl">
+          <div className="text-center mb-16">
+            <Badge variant="default" className="mb-4">FAQ</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Common Questions
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <Card key={i}>
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold text-white mb-2 flex items-start gap-2">
+                    <ChevronDown className="h-4 w-4 text-violet-400 shrink-0 mt-0.5" />
+                    {faq.q}
+                  </h3>
+                  <p className="text-sm text-white/50 leading-relaxed pl-6">{faq.a}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-4">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-600/20 to-purple-600/20 p-12">
+            <Zap className="h-10 w-10 text-violet-400 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Go Viral?</h2>
+            <p className="text-white/60 mb-8">
+              Join thousands of Filipino creators already using Viral Caption Studio to grow their audience.
+            </p>
+            <Link href="/register">
+              <Button size="xl" variant="gradient" className="gap-2">
+                Start Generating Free <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <p className="mt-4 text-xs text-white/30">No credit card required • 10 free generations per day</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 py-8 px-4">
+        <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-gradient-to-br from-violet-600 to-purple-600">
+              <Zap className="h-3 w-3 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-white/70">Viral Caption Studio</span>
+          </div>
+          <p className="text-xs text-white/30">© 2024 Viral Caption Studio. Built for Filipino creators.</p>
+          <div className="flex gap-4">
+            <Link href="#" className="text-xs text-white/30 hover:text-white/60 transition-colors">Privacy</Link>
+            <Link href="#" className="text-xs text-white/30 hover:text-white/60 transition-colors">Terms</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(FREE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  isActive      Boolean   @default(true)
+
+  accounts         Account[]
+  sessions         Session[]
+  generatedContent GeneratedContent[]
+  savedContent     SavedContent[]
+  subscription     Subscription?
+  usageLogs        UsageLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model GeneratedContent {
+  id          String      @id @default(cuid())
+  userId      String
+  platform    Platform
+  contentType ContentType
+  tone        Tone
+  length      Length
+  topic       String
+  audience    String?
+  extraDetails String?
+  results     Json
+  createdAt   DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavedContent {
+  id          String      @id @default(cuid())
+  userId      String
+  platform    Platform
+  contentType ContentType
+  title       String
+  content     String      @db.Text
+  hashtags    String?     @db.Text
+  hook        String?     @db.Text
+  firstComment String?   @db.Text
+  cta         String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  plan                 SubscriptionPlan   @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UsageLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  date      DateTime @default(now())
+  count     Int      @default(1)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model Template {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  platform    Platform
+  contentType ContentType
+  tone        Tone
+  length      Length
+  topic       String
+  audience    String?
+  extraDetails String?
+  isPublic    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum Role {
+  FREE
+  PRO
+  ADMIN
+}
+
+enum Platform {
+  FACEBOOK
+  TIKTOK
+  INSTAGRAM
+  YOUTUBE_SHORTS
+}
+
+enum ContentType {
+  REEL_CAPTION
+  VIRAL_HOOK
+  HASHTAGS
+  FIRST_COMMENT
+  GIVEAWAY_POST
+  STAR_SENDER_SHOUTOUT
+  FUNNY_COUPLE_CAPTION
+  INSPIRATIONAL_POST
+  OFW_CONTENT
+  NURSE_APPRECIATION
+  REAL_ESTATE_CAPTION
+}
+
+enum Tone {
+  FUNNY
+  INSPIRATIONAL
+  EMOTIONAL
+  FRIENDLY
+  PROFESSIONAL
+  TAGALOG
+  TAGLISH
+  VIRAL
+}
+
+enum Length {
+  SHORT
+  MEDIUM
+  LONG
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  CREATOR_PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
+}

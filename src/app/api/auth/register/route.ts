@@ -1,0 +1,53 @@
+﻿import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { db } from "@/lib/db";
+import { registerSchema } from "@/lib/validations";
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const result = registerSchema.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error.issues[0]?.message },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, password } = result.data;
+
+    const existing = await db.user.findUnique({ where: { email } });
+    if (existing) {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 409 }
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const user = await db.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        subscription: {
+          create: {
+            plan: "FREE",
+            status: "ACTIVE",
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      { id: user.id, email: user.email, name: user.name },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Register error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
