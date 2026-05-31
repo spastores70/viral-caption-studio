@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Wand2, Bookmark, FileText, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Wand2, ImageIcon, Bookmark, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/generator", label: "Generate", icon: Wand2 },
+  { href: "/generator", label: "Caption", icon: Wand2 },
+  { href: "/images", label: "Images", icon: ImageIcon },
   { href: "/saved", label: "Saved", icon: Bookmark },
-  { href: "/templates", label: "Templates", icon: FileText },
 ];
 
 interface MobileNavProps {
@@ -21,7 +21,10 @@ export function MobileNav({ onMoreClick }: MobileNavProps) {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gray-950/95 backdrop-blur-xl border-t border-white/10 lg:hidden">
-      <div className="flex items-center justify-around h-16 px-2 safe-area-inset-bottom">
+      <div
+        className="flex items-center justify-around h-16 px-1"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -31,10 +34,8 @@ export function MobileNav({ onMoreClick }: MobileNavProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-3 py-1 rounded-xl transition-all",
-                isActive
-                  ? "text-violet-400"
-                  : "text-white/40 active:text-white/70"
+                "flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[44px] py-1 rounded-xl transition-all",
+                isActive ? "text-violet-400" : "text-white/40"
               )}
             >
               <div
@@ -43,19 +44,24 @@ export function MobileNav({ onMoreClick }: MobileNavProps) {
                   isActive && "bg-violet-600/20"
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-[18px] w-[18px]" />
               </div>
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
+              {/* New badge for Images */}
+              {item.href === "/images" && !isActive && (
+                <span className="absolute top-2 ml-5 w-1.5 h-1.5 bg-violet-500 rounded-full" />
+              )}
             </Link>
           );
         })}
 
+        {/* More button */}
         <button
           onClick={onMoreClick}
-          className="flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-3 py-1 rounded-xl text-white/40 active:text-white/70 transition-all"
+          className="flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[44px] py-1 rounded-xl text-white/40 active:text-white/70 transition-all"
         >
           <div className="flex h-7 w-7 items-center justify-center rounded-lg">
-            <MoreHorizontal className="h-5 w-5" />
+            <MoreHorizontal className="h-[18px] w-[18px]" />
           </div>
           <span className="text-[10px] font-medium leading-none">More</span>
         </button>

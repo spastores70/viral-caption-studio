@@ -25,6 +25,7 @@ model User {
   savedContent     SavedContent[]
   subscription     Subscription?
   usageLogs        UsageLog[]
+  generatedImages  GeneratedImage[]
 }
 
 model Account {
@@ -195,4 +196,38 @@ enum SubscriptionStatus {
   CANCELED
   PAST_DUE
   TRIALING
+}
+
+model GeneratedImage {
+  id          String      @id @default(cuid())
+  userId      String
+  prompt      String      @db.Text
+  style       ImageStyle
+  ratio       ImageRatio
+  dalleSize   String
+  imageUrls   Json
+  revisedPrompts Json?
+  createdAt   DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+enum ImageStyle {
+  REALISTIC
+  CINEMATIC
+  CARTOON
+  ANIME
+  FACEBOOK_POST
+  FACEBOOK_REEL_COVER
+  MOTIVATIONAL
+  PROFESSIONAL
+}
+
+enum ImageRatio {
+  SQUARE
+  PORTRAIT_4_5
+  PORTRAIT_9_16
+  LANDSCAPE_16_9
 }

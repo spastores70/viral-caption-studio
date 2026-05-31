@@ -6,7 +6,9 @@ import { Zap, Menu } from "lucide-react";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/generator": "AI Generator",
+  "/generator": "Caption Generator",
+  "/images": "Image Generator",
+  "/images/history": "Image History",
   "/saved": "Saved Content",
   "/templates": "Templates",
   "/billing": "Billing",

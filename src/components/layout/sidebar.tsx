@@ -14,6 +14,7 @@ import {
   LogOut,
   Zap,
   X,
+  ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,7 +23,8 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/generator", label: "AI Generator", icon: Wand2 },
+  { href: "/generator", label: "Caption Generator", icon: Wand2 },
+  { href: "/images", label: "Image Generator", icon: ImageIcon, badge: "New" },
   { href: "/saved", label: "Saved Content", icon: Bookmark },
   { href: "/templates", label: "Templates", icon: FileText },
   { href: "/billing", label: "Billing", icon: CreditCard },
@@ -93,7 +95,12 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                   isActive ? "text-violet-400" : "text-white/40"
                 )}
               />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {(item as any).badge && (
+                <span className="text-[9px] font-bold bg-violet-600 text-white rounded-full px-1.5 py-0.5 leading-none">
+                  {(item as any).badge}
+                </span>
+              )}
             </Link>
           );
         })}
