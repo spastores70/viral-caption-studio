@@ -26,6 +26,8 @@ model User {
   subscription     Subscription?
   usageLogs        UsageLog[]
   generatedImages  GeneratedImage[]
+  generatedVideos  GeneratedVideo[]
+  videoCredits     VideoCredit?
 }
 
 model Account {
@@ -230,4 +232,68 @@ enum ImageRatio {
   PORTRAIT_4_5
   PORTRAIT_9_16
   LANDSCAPE_16_9
+}
+
+// ── Video Generation ─────────────────────────────────────
+
+model GeneratedVideo {
+  id             String      @id @default(cuid())
+  userId         String
+  prompt         String      @db.Text
+  enhancedPrompt String?     @db.Text
+  imageUrl       String?
+  style          VideoStyle
+  ratio          VideoRatio
+  duration       Int
+  mode           VideoMode
+  falModel       String
+  falRequestId   String?     @unique
+  status         VideoStatus @default(QUEUED)
+  videoUrl       String?
+  thumbnailUrl   String?
+  creditsUsed    Int
+  errorMessage   String?
+  createdAt      DateTime    @default(now())
+  completedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([falRequestId])
+}
+
+model VideoCredit {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Int      @default(5)
+  totalUsed Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum VideoStyle {
+  CINEMATIC
+  REALISTIC
+  CARTOON
+  FANTASY
+  VIRAL_SOCIAL
+}
+
+enum VideoRatio {
+  PORTRAIT_9_16
+  LANDSCAPE_16_9
+  SQUARE_1_1
+}
+
+enum VideoMode {
+  TEXT_TO_VIDEO
+  IMAGE_TO_VIDEO
+}
+
+enum VideoStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
 }

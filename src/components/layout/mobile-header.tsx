@@ -9,6 +9,8 @@ const pageTitles: Record<string, string> = {
   "/generator": "Caption Generator",
   "/images": "Image Generator",
   "/images/history": "Image History",
+  "/videos": "Video Generator",
+  "/videos/history": "Video History",
   "/saved": "Saved Content",
   "/templates": "Templates",
   "/billing": "Billing",

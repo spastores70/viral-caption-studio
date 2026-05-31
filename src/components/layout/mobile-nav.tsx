@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Wand2, ImageIcon, Bookmark, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Wand2, ImageIcon, Video, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/generator", label: "Caption", icon: Wand2 },
   { href: "/images", label: "Images", icon: ImageIcon },
-  { href: "/saved", label: "Saved", icon: Bookmark },
+  { href: "/videos", label: "Videos", icon: Video },
 ];
 
 interface MobileNavProps {
@@ -47,15 +47,10 @@ export function MobileNav({ onMoreClick }: MobileNavProps) {
                 <Icon className="h-[18px] w-[18px]" />
               </div>
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
-              {/* New badge for Images */}
-              {item.href === "/images" && !isActive && (
-                <span className="absolute top-2 ml-5 w-1.5 h-1.5 bg-violet-500 rounded-full" />
-              )}
             </Link>
           );
         })}
 
-        {/* More button */}
         <button
           onClick={onMoreClick}
           className="flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[44px] py-1 rounded-xl text-white/40 active:text-white/70 transition-all"

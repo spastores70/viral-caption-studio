@@ -15,6 +15,7 @@ import {
   Zap,
   X,
   ImageIcon,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,7 +25,8 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/generator", label: "Caption Generator", icon: Wand2 },
-  { href: "/images", label: "Image Generator", icon: ImageIcon, badge: "New" },
+  { href: "/images", label: "Image Generator", icon: ImageIcon },
+  { href: "/videos", label: "Video Generator", icon: Video, badge: "New" },
   { href: "/saved", label: "Saved Content", icon: Bookmark },
   { href: "/templates", label: "Templates", icon: FileText },
   { href: "/billing", label: "Billing", icon: CreditCard },
