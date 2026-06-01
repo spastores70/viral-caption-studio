@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { getFalClient, FalVideoInput } from "@/lib/fal";
+import { getFalClient } from "@/lib/fal";
 import { getOpenAI } from "@/lib/openai";
 import {
   VIDEO_STYLES, VIDEO_RATIOS, VIDEO_DURATIONS,
@@ -99,16 +99,20 @@ export async function POST(req: NextRequest) {
 
     // Submit to Fal AI queue
     const falClient = getFalClient();
-    const falInput: FalVideoInput = {
+
+    // Build input — only include params Kling v1.5 actually supports
+    const falInput: Record<string, unknown> = {
       prompt: finalPrompt,
       negative_prompt: styleConfig.negativePrompt,
-      duration: durationConfig.falValue,
-      aspect_ratio: ratioConfig.falValue,
-      cfg_scale: 0.5,
-      ...(mode === "IMAGE_TO_VIDEO" && imageUrl ? { image_url: imageUrl } : {}),
+      duration: durationConfig.falValue,   // "5" | "10"
+      aspect_ratio: ratioConfig.falValue,  // "9:16" | "16:9" | "1:1"
     };
+    if (mode === "IMAGE_TO_VIDEO" && imageUrl) {
+      falInput.image_url = imageUrl;
+    }
 
-    const { request_id } = await falClient.queue.submit(falModel, { input: falInput });
+    const submitResult = await falClient.queue.submit(falModel, { input: falInput });
+    const request_id = (submitResult as any).request_id as string;
 
     // Deduct credits (pro users: don't deduct)
     if (!isPro) {
@@ -153,8 +157,10 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+    const detail = error?.body?.detail || error?.message || String(error);
+    console.error("Fal submit detail:", detail);
     return NextResponse.json(
-      { error: "Failed to start video generation. Please try again." },
+      { error: `Video generation failed: ${detail}` },
       { status: 500 }
     );
   }

@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const videoId = searchParams.get("id");
-
     if (!videoId) {
       return NextResponse.json({ error: "Video ID required" }, { status: 400 });
     }
@@ -21,17 +20,15 @@ export async function GET(req: NextRequest) {
     const video = await db.generatedVideo.findFirst({
       where: { id: videoId, userId: session.user.id },
     });
-
     if (!video) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Already completed or failed — return immediately
+    // Already settled — return from DB
     if (video.status === "COMPLETED" || video.status === "FAILED") {
       return NextResponse.json({
         status: video.status,
         videoUrl: video.videoUrl,
-        thumbnailUrl: video.thumbnailUrl,
         errorMessage: video.errorMessage,
       });
     }
@@ -40,42 +37,63 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ status: video.status });
     }
 
-    // Poll Fal queue
     const falClient = getFalClient();
-    const queueStatus = await falClient.queue.status(video.falModel, {
-      requestId: video.falRequestId,
-      logs: false,
-    });
 
-    const falStatus = (queueStatus as any).status as string;
-
-    if (falStatus === "COMPLETED") {
-      // Fetch the result
-      const result = await falClient.queue.result(video.falModel, {
+    // Check Fal queue status
+    let queueStatus: any;
+    try {
+      queueStatus = await falClient.queue.status(video.falModel, {
         requestId: video.falRequestId,
+        logs: false,
       });
-
-      const data = result.data as any;
-      const videoUrl = data?.video?.url || null;
+    } catch (statusErr: any) {
+      // Fal throws when request ID is unknown or expired
+      const msg = statusErr?.message || String(statusErr);
+      console.error("Fal queue.status error:", msg);
 
       await db.generatedVideo.update({
         where: { id: video.id },
-        data: {
-          status: "COMPLETED",
-          videoUrl,
-          completedAt: new Date(),
-        },
+        data: { status: "FAILED", errorMessage: msg },
       });
-
-      return NextResponse.json({
-        status: "COMPLETED",
-        videoUrl,
-        thumbnailUrl: null,
-      });
+      return NextResponse.json({ status: "FAILED", errorMessage: msg });
     }
 
-    if (falStatus === "FAILED" || (queueStatus as any).error) {
-      const errMsg = (queueStatus as any).error || "Generation failed";
+    // Fal SDK v1.x wraps the response — status may be at root or nested
+    const falStatus: string =
+      (queueStatus as any)?.status ??
+      (queueStatus as any)?.queue_status ??
+      "IN_QUEUE";
+
+    console.log(`Fal status for ${video.falRequestId}:`, falStatus, JSON.stringify(queueStatus).slice(0, 200));
+
+    if (falStatus === "COMPLETED") {
+      let videoUrl: string | null = null;
+      try {
+        const result = await falClient.queue.result(video.falModel, {
+          requestId: video.falRequestId,
+        });
+        const data = (result as any)?.data ?? result;
+        // Kling returns { video: { url: "..." } }
+        videoUrl = data?.video?.url ?? data?.video_url ?? null;
+        console.log("Fal result data keys:", Object.keys(data || {}), "videoUrl:", videoUrl);
+      } catch (resultErr: any) {
+        console.error("Fal queue.result error:", resultErr?.message);
+      }
+
+      await db.generatedVideo.update({
+        where: { id: video.id },
+        data: { status: "COMPLETED", videoUrl, completedAt: new Date() },
+      });
+
+      return NextResponse.json({ status: "COMPLETED", videoUrl });
+    }
+
+    // Handle failure states
+    const falError = (queueStatus as any)?.error;
+    if (falStatus === "FAILED" || falStatus === "ERROR" || falError) {
+      const errMsg = falError || `Fal returned status: ${falStatus}`;
+      console.error("Fal generation failed:", errMsg);
+
       await db.generatedVideo.update({
         where: { id: video.id },
         data: { status: "FAILED", errorMessage: errMsg },
@@ -83,26 +101,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ status: "FAILED", errorMessage: errMsg });
     }
 
-    // Still IN_QUEUE or IN_PROGRESS
-    const newStatus = falStatus === "IN_PROGRESS" ? "PROCESSING" : "QUEUED";
-
-    if (newStatus !== video.status) {
+    // Still running — IN_QUEUE or IN_PROGRESS
+    const appStatus = falStatus === "IN_PROGRESS" ? "PROCESSING" : "QUEUED";
+    if (appStatus !== video.status) {
       await db.generatedVideo.update({
         where: { id: video.id },
-        data: { status: newStatus as any },
+        data: { status: appStatus as any },
       });
     }
 
-    const queuePosition = (queueStatus as any).queue_position;
-
     return NextResponse.json({
-      status: newStatus,
-      queuePosition: queuePosition ?? null,
+      status: appStatus,
+      queuePosition: (queueStatus as any)?.queue_position ?? null,
     });
   } catch (error: any) {
-    console.error("Video status error:", error);
+    console.error("video-status route error:", error?.message || error);
     return NextResponse.json(
-      { error: "Failed to check status", status: "QUEUED" },
+      { status: "QUEUED", error: error?.message },
       { status: 500 }
     );
   }

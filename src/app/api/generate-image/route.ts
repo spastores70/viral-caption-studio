@@ -69,14 +69,14 @@ export async function POST(req: NextRequest) {
     // Build enhanced prompt
     const enhancedPrompt = `${styleConfig.prefix} ${prompt}. High quality, professional result.`;
 
-    const openai = getOpenAI();
+    const openaiClient = getOpenAI();
 
-    // Generate 4 images in parallel (DALL-E 3 only supports n=1)
+    // Generate 4 images in parallel (DALL-E 3 only supports n=1 per request)
     const imagePromises = Array.from({ length: 4 }, () =>
-      openai.images.generate({
+      openaiClient.images.generate({
         model: "dall-e-3",
         prompt: enhancedPrompt,
-        size: dalleSize,
+        size: dalleSize as any,
         quality: "standard",
         n: 1,
       })
@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
 
     const imageUrls: string[] = [];
     const revisedPrompts: string[] = [];
+    let firstError: string | null = null;
 
     for (const result of results) {
       if (result.status === "fulfilled") {
@@ -94,12 +95,22 @@ export async function POST(req: NextRequest) {
           imageUrls.push(img.url);
           revisedPrompts.push(img.revised_prompt || "");
         }
+      } else if (result.status === "rejected" && !firstError) {
+        firstError =
+          result.reason?.message ||
+          result.reason?.error?.message ||
+          String(result.reason);
       }
     }
 
     if (imageUrls.length === 0) {
+      console.error("All DALL-E calls failed. First error:", firstError);
       return NextResponse.json(
-        { error: "Failed to generate images. Please try again." },
+        {
+          error: firstError
+            ? `Image generation failed: ${firstError}`
+            : "Failed to generate images. Check your OpenAI API key and billing.",
+        },
         { status: 500 }
       );
     }
@@ -144,8 +155,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const detail = error?.message || error?.error?.message || String(error);
     return NextResponse.json(
-      { error: "Failed to generate images. Please try again." },
+      { error: `Image generation failed: ${detail}` },
       { status: 500 }
     );
   }
